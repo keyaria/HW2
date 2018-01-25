@@ -21,7 +21,7 @@ import requests
 #####################
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'hardtoguessstring'
+app.config['SECRET_KEY'] = 'btheodmsdps'
 
 ####################
 ###### FORMS #######
