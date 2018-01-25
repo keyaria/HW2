@@ -1,0 +1,20 @@
+<html>
+<title>
+</title>
+<body>
+<html>
+
+{% block content %}
+
+<form method = "POST" action="http://localhost:5000/album_result">
+	 {{ form.hidden_tag() }}
+      {% for message in get_flashed_messages() %}
+      {{ message }}
+	{% endfor %}
+<p>{{ form.name.label }}{{ form.name() }}<p>
+<p>{{ form.rate.label }}{{ form.rate() }}<p>
+{{ form.submit() }}
+</form>
+{% endblock %}
+</body>
+</html>

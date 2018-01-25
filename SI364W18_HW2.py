@@ -11,7 +11,7 @@
 #############################
 ##### IMPORT STATEMENTS #####
 #############################
-from flask import Flask, request, render_template, url_for
+from flask import Flask, request, render_template, url_for, flash, redirect
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, RadioField, ValidationError
 from wtforms.validators import Required
@@ -27,10 +27,11 @@ app.config['SECRET_KEY'] = 'hardtoguessstring'
 ###### FORMS #######
 ####################
 
-class AlbumEntryForm():
+class AlbumEntryForm(FlaskForm):
 
-	name = StringField('Enter the name of an album:', validators.Datarequired())
-	rate = RadioField('How much do you like this album? (1 low, 3 high)', choices=[('1'),('2'),('3')],validators.Datarequired())
+	name = StringField('Enter the name of an album:',  validators=[ Required() ])
+	rate = RadioField('How much do you like this album? (1 low, 3 high)', choices=[('1','1'),('2','2'),('3','3')], validators=[ Required() ])
+	submit = SubmitField('Submit')
 
 
 ####################
@@ -72,14 +73,19 @@ def specific(artist_name):
 	search = (requests.get(url=url, params=param)).json()
 	return render_template('specific_artist.html',results=search['results'])
 
-@app.route('/album_entry')
+@app.route('/album_entry', methods = ['POST', 'GET'])
 def albumentry():
-	form = AlbumEntryForm(request.form)
-	return render_template('album_data.html', form=form)
+	form = AlbumEntryForm()
+	return render_template('album_entry.html', form=form)
 
-@app.route('/album_result')
+@app.route('/album_result', methods = ['POST', 'GET'])
 def album_result():
 	form = AlbumEntryForm(request.form)
-	return render_template('album_data.html', form=form)
+	if request.method == 'POST' and form.validate_on_submit():
+		album = request.form['name']
+		rate = request.form['rate']
+		return render_template('album_data.html', form=form, album=album,rate=rate)
+	flash('All Fields are required!')
+	return redirect(url_for('albumentry'))
 if __name__ == '__main__':
     app.run(use_reloader=True,debug=True)
